@@ -2,3 +2,4 @@ node_modules
 
 ## API KEYS
 src/unsplashAPI/unsplash.js
+config.js
