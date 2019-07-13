@@ -1,5 +1,4 @@
 const fetch = require('node-fetch');
-//const dbConnection = require('./db.js');
 const fs = require('fs');
 const key = require('../src/unsplashAPI/unsplash.js');
 const faker = require('faker');
@@ -21,22 +20,9 @@ const tag = [
 
 
 const photoGenerator = () => {
-  let productsS = [];
   let photoData = [];
-  let counter = 0;
-  // while (counter < 150) {
-  // // productsS.push(faker.fake("{{commerce.product}}"))
-  // productsS.push(_.sample(tag)); 
-  // counter++;
-  // }
- // let products = productsS.filter((item, index) => productsS.indexOf(item) === index);
-//  const set1 = new Set(productsS); 
-//  const products = [... set1]
  products = tag;
-  console.log(products.length)
-  //products is an array with product id
-  //console.log('what is it? ',JSON.stringify(productsS), 'length:', productsS.length);
- // console.log('what is it??', JSON.stringify(products), 'length:', products.length);
+  // console.log(products.length)
   for (let i = 0; i < products.length; i++) {
     fetch(
       `https://api.unsplash.com/search/photos/?query=${products[i]}&client_id=${key.accessKey}`,
@@ -49,13 +35,8 @@ const photoGenerator = () => {
     )
       .then((response) => response.json())
       .then(async (data) => {
-        //data.result is an array of all the related photos
-        //only need the first 5 photos
         let tId = i;
         for (let k = 0; k < 10; k++) {
-          //push each item info into an object
-          //note: autoincrement id
-          //push each item into an array
           if (k >= 5) {
             tId = i + products.length;
           }
@@ -66,13 +47,6 @@ const photoGenerator = () => {
             productTag: products[i],
             tagID: tId
           });
-          // dbConnection.insertIntoDB(
-          //   data.results[k].id,
-          //   data.results[k].user.username,
-          //   data.results[k].urls.full,
-          //   products[i],
-          //   i);
-          //console.log('what is it?', photoData);
         }
       })
       .then(() => {
