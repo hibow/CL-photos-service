@@ -10,8 +10,8 @@
 ## Table of Contents 
   1. [Requirements](#Requirements)
   2. [Development](#Development)
-    2.1 [Installing Dependencies](#Installing-Dependencies)
-    2.2 [API Endpoints](#API-Endpoints)
+    - [2.1 Installing Dependencies](#21-Installing-Dependencies)
+    - [2.2 API Endpoints](#22-API-Endpoints)
 
 
 ## Requirements
@@ -41,4 +41,30 @@ npm run server-dev
 ```
 
 ## API Endpoints
+  - GET /product/:id
+    - returns all photo data based on specific product id
 
+  - POST /product/:id/:ptag
+    - posts 5 photo data to specific product id (if the same data doesn't exist in database)
+    - photo data is generated from unplash API based on product tag name
+    - no return value
+      
+  - PUT /product/:id/:user
+    - updates user info of photo data based on specific product id
+    - returns updated item counts
+  
+  - DELETE /product/:id
+    - deletes all photo data based on specific product id
+    - returns deleted item counts
+
+  * Sample data in JSON stringified format 
+  ```
+  [
+      {"id":225,
+      "photoid":"cukIbtQ5Hdk",
+      "link":"https://images.unsplash.com/photo-1484068043587-e86f6124d2ee?ixlib=rb-1.2.1&q=85&fm=jpg&crop=entropy&cs=srgb&ixid=eyJhcHBfaWQiOjcyNjg1fQ",
+      "username":"hibow",
+      "productTag":"window",
+      "tagID":"2"}
+  ]
+  ```
