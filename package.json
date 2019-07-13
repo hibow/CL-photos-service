@@ -7,7 +7,8 @@
     "start": "webpack-dev-server --config ./webpack.config.js --mode development",
     "react-dev": "webpack -p --watch",
     "server-dev": "nodemon server/server.js",
-    "seed": "node database/seed.js",
+    "seed": "sequelize db:seed:all",
+    "unseed": "sequelize db:seed:undo:all",
     "test": "jest"
   },
   "repository": {
