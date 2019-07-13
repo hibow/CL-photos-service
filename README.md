@@ -8,19 +8,19 @@
   - https://github.com/rpt13-bohemian-rhapsody/rpt13-SDC-david-service
 
 ## Table of Contents 
-  1. [Requirements](#Requirements)
-  2. [Development](#Development)
-    - [2.1 Installing Dependencies](#21-Installing-Dependencies)
-    - [2.2 API Endpoints](#22-API-Endpoints)
+  1. [Requirements](#1-Requirements)
+  2. [Development](#2-Development)
+  - 2.1 [Installing Dependencies](#21-Installing-Dependencies)
+  - 2.2 [API Endpoints](#22-API-Endpoints)
 
 
-## Requirements
+## 1. Requirements
 
 - Node >=10.13.0
 - MySql
 
-## Development
-### Installing Dependencies
+## 2. Development
+### 2.1 Installing Dependencies
 
 From within the root directory:
 
@@ -40,7 +40,7 @@ npm run react-dev
 npm run server-dev
 ```
 
-## API Endpoints
+## 2.2 API Endpoints
   - GET /product/:id
     - returns all photo data based on specific product id
 
