@@ -1,5 +1,4 @@
 const fs = require('fs');
-const performance = require('perf_hooks').performance;
 //seeding into a json file
 //photoGenerator();
 const contents = fs.readFileSync('helper/photos.js');
@@ -35,3 +34,6 @@ for (let i in tag) {
     console.log(tag[i]);
   }
 }
+
+//change tagID type
+//drop adn recreate

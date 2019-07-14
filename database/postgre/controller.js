@@ -22,15 +22,10 @@ module.exports = {
     }).catch(err => console.log(err));
   },
   insertIntoDB: (photoid, username, link, productTag, tagID) => {
-    return new Promise ((resolve, reject) => {
-      const sql = `INSERT INTO photos (photoid, link, username, productTag, tagID)
+    const sql = `INSERT INTO public."Photos" (photoid, link, username, productTag, tagID)
                    VALUES ('${photoid}', '${link}', '${username}', '${productTag}', '${tagID}')`;
-      connection.query(sql, (err, row) => {
-        if (err) {
-          return reject(err);
-      } 
-      resolve(row);
-      });
+      return db.query(query).then((res) => {
+        return res.rows;
+      }).catch(err => console.log(err));
     }
-  )}
 }

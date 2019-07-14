@@ -1,27 +1,31 @@
 /****************testing variables *************************/
- const tagID = '123'; 
- const pTag = 'Wine';
+ const tagID = 50; 
+ const pTag = 'black tea';
  const user = 'hibow';
 /***************environment variables*************************/
 const Photos = require('../models').Photos;
 require('dotenv').config(); 
-
+const performance = require('perf_hooks').performance;
 
   const getPhotos = async (tID) => {
-    const start = new Date();
+    //const start = new Date();
+    var t0 = performance.now();
     try{
     const result = await Photos.findAll({
-        where: {tagID: tID}
+        where: {tagID: tID}, 
+        limit: 10
       });
-      await console.log( `${process.env.DB_NAME} query took ${new Date() - start} ms`);
       await console.log(result.length);
-      //return result;
+      var t1 = performance.now();
+      await console.log("Call to seed took " + (t1 - t0) + " milliseconds.");
+      return await result;
     } catch(err){
       await console.log(`ERR! ${process.env.DB_NAME} query took ${new Date() - start} ms`);
       await console.log(err);
+      return;
     }
-    await console.log(`${process.env.DB_NAME} END: query took ${new Date() - start} ms`);
-    return;
+    //await console.log(`${process.env.DB_NAME} END: query took ${new Date() - start} ms`);
+
   }
 
   const getPhotosFromTag = async (pTag, tID) => {
@@ -83,8 +87,8 @@ require('dotenv').config();
   
 
 
-
   getPhotos(tagID)
+
 
   //getPhotosFromTag(pTag, tagID);
 

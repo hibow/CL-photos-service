@@ -34,18 +34,18 @@ const photoGenerator = () => {
       },
     )
       .then((response) => response.json())
-      .then(async (data) => {
-        let tId = i;
+      .then((data) => {
+        let tID = i;
         for (let k = 0; k < 10; k++) {
-          if (k >= 5) {
-            tId = i + products.length;
+          if (k>5) {
+            tID = products.length + i;
           }
           photoData.push({
             photoid: data.results[k].id, 
             username: data.results[k].user.username, 
             link: data.results[k].urls.full,
             productTag: products[i],
-            tagID: tId
+            tagID: tID
           });
         }
       })
@@ -53,6 +53,7 @@ const photoGenerator = () => {
         fs.writeFileSync(__dirname+'/photos.js', JSON.stringify(photoData, null, '\t'));
       })
       .catch(err => console.log(err));
+
      
   }
   return;
