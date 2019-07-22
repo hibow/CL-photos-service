@@ -2,7 +2,7 @@ const models = require('../models/index.js');
 const fetch = require('node-fetch');
 const Photos = require('../models').Photos;
 const key = require('../src/unsplashAPI/unsplash.js');
-
+//written for mysql 
 module.exports = {
   post: (req, res) => {
     const ptag = req.params.ptag;
