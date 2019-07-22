@@ -2,6 +2,7 @@ const models = require('../models/index.js');
 const fetch = require('node-fetch');
 const Photos = require('../models').Photos;
 const key = require('../src/unsplashAPI/unsplash.js');
+const query = require('../database/query.js');
 //written for mysql 
 module.exports = {
   post: (req, res) => {
@@ -18,50 +19,27 @@ module.exports = {
     )
       .then((response) => response.json())
       .then((data) => {
-        for (let k = 0; k < 5; k++) {
-          Photos.findOrCreate({
-            where: {
-              photoid: data.results[k].id, 
-              username: data.results[k].user.username, 
-              link: data.results[k].urls.full,
-              productTag: ptag,
-              tagID: pid
-            },
-            default: {tagID: pid}
-          })
-        }
+         return query.createPhotos(data.results[0].id, data.results[0].user.username, data.results[0].urls.full, ptag, pid)
       })
-      .then(photos => res.json(photos))
+      .then(result => res.json(result))
       .catch(err => console.log(err))
   },
   get: (req, res) => {
     const pid = req.params.id;
-    return Photos
-      .findAll({
-        where: {tagID: pid}
-      })
+    return query.getPhotos(pid)
       .then(photos => res.json(photos))
       .catch(err => console.log(err))
   },
   delete: (req, res) => {
     const pid = req.params.id;
-    return Photos
-      .destroy({
-        where: {tagID: pid}
-      })
+    return query.deletePhotos(pid)
       .then(photos => res.json(photos))
       .catch(err => console.log(err))
   },
   update: (req, res) => {
     const pid = req.params.id;
     const puser = req.params.user;
-    return Photos.update({
-      username: puser
-     }, {
-       where: {
-         tagID: pid
-       }
-     })
+    return query.updateUser(puser, pid)
      .then(photos => res.json(photos))
      .catch(err => console.log(err))
     }

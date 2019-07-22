@@ -1,6 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const dbConnection = require('./../database/db.js');
+const dbConnection = require('./../database/index.js');
 const app = express();
 const port = process.env.port || 3005;
 const cors = require('cors');

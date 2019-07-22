@@ -26,12 +26,13 @@ module.exports = {
   getPhotos: async(tID) => {
     console.time('getPhotos');
     // const cypher = `MATCH (p:photos) WHERE id(p) >= ${dataID} AND p.tagID = $tagID  RETURN p, collect(distinct p.photoid) LIMIT 5`;
-    const cypher = `MATCH (p:photos) WHERE id(p) >= ${dataID} AND p.tagID = $tagID  RETURN p  LIMIT 5`;
+    const cypher = `MATCH (p:photos) WHERE id(p) >= ${dataID} AND p.tagID = $tagID  RETURN p LIMIT 5`;
     try{
       result = await session.run(cypher, {tagID: tID});
       const nameRecords = result.records;
-      const count = nameRecords[0].get('p');
-      console.log(count);
+      // const final = result.records.map((item)=> item.get[0].properties);
+      // const count = nameRecords[0].get('p');
+      console.log(nameRecords[0].get['p']);
       session.close();
      console.timeEnd('getPhotos');
       // console.log(`seeding process took ${new Date().getTime() - t0} ms`);
@@ -111,10 +112,11 @@ module.exports = {
       const nameRecords = result.records;
       const count = nameRecords[0];
       console.log(count);
+      console.timeEnd('delPhotos');
       session.close();
-     console.timeEnd('delPhotos');
       // console.log(`seeding process took ${new Date().getTime() - t0} ms`);
       driver.close();
+      return count;
     }catch(err) {
       console.log(err);
     }
