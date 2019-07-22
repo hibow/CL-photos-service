@@ -1,19 +1,34 @@
 'use strict';
-const {photoGenerator} = require('../helper/generator');
+//const {photoGenerator} = require('../helper/generator');
 const fs = require('fs');
-//seeding into a json file
-//photoGenerator();
+const performance = require('perf_hooks').performance;
+
 const contents = fs.readFileSync('helper/photos.js');
-// Define to JSON type
 const jsonContent = JSON.parse(contents);
 
 
+
 module.exports = {
-  up: (queryInterface, Sequelize) => {
-      return queryInterface.bulkInsert('Photos', jsonContent, {});
+  up: async (queryInterface, Sequelize) => {
+    let insertData = [];
+    const totaltimes = 1;
+    const totalbatch = 10000;
+    for (let i = 0; i < totaltimes; i++) {
+      jsonContent.forEach(item => {
+      insertData.push(item);
+    });  
+}
+      try{
+        for (let j = 0; j < totalbatch; j++) {
+        await queryInterface.bulkInsert('Photos', insertData, {});
+      }
+    } catch {
+      console.log(err);
+    }
+
   },
 
-  down: (queryInterface, Sequelize) => {
-      return queryInterface.bulkDelete('Photos', null, {});
+  down: async (queryInterface, Sequelize) => {
+      return await queryInterface.bulkDelete('Photos', null, {});
   }
 };

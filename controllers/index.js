@@ -38,7 +38,7 @@ module.exports = {
     const pid = req.params.id;
     return Photos
       .findAll({
-        where: {TagID: pid}
+        where: {tagID: pid}
       })
       .then(photos => res.json(photos))
       .catch(err => console.log(err))
@@ -47,7 +47,7 @@ module.exports = {
     const pid = req.params.id;
     return Photos
       .destroy({
-        where: {TagID: pid}
+        where: {tagID: pid}
       })
       .then(photos => res.json(photos))
       .catch(err => console.log(err))
@@ -59,7 +59,7 @@ module.exports = {
       username: puser
      }, {
        where: {
-         TagID: pid
+         tagID: pid
        }
      })
      .then(photos => res.json(photos))

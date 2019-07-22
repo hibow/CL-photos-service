@@ -5,7 +5,7 @@ module.exports = (sequelize, DataTypes) => {
     link: DataTypes.STRING,
     username: DataTypes.STRING,
     productTag: DataTypes.STRING,
-    tagID: DataTypes.STRING
+    tagID: DataTypes.INTEGER
   }, {});
   Photos.associate = function(models) {
     // associations can be defined here
