@@ -4,8 +4,6 @@ const key = require('../../src/unsplashAPI/unsplash.js');
 const dataID = 100002;
 module.exports = {
   getPhotosCounts: async (tID) => {
-    // let t0 = new Date().getTime();
-    // let t0 = performance.now();
     console.time('getCounts');
     let result;
     const cypher = `MATCH (p:photos) WHERE p.tagID = $tagID RETURN count(*) as count`;
@@ -17,7 +15,7 @@ module.exports = {
       session.close();
       // console.log(`took ${performance.now() - t0} ms`)
      console.timeEnd('getCounts');
-      // console.log(`seeding process took ${new Date().getTime() - t0} ms`);
+     return count;
       driver.close();
     }catch(err) {
       console.log(err);
@@ -25,16 +23,23 @@ module.exports = {
   },
   getPhotos: async(tID) => {
     console.time('getPhotos');
-    // const cypher = `MATCH (p:photos) WHERE id(p) >= ${dataID} AND p.tagID = $tagID  RETURN p, collect(distinct p.photoid) LIMIT 5`;
-    const cypher = `MATCH (p:photos) WHERE id(p) >= ${dataID} AND p.tagID = $tagID  RETURN p LIMIT 5`;
+    const cypher = `MATCH (p:photos) WHERE id(p) >= ${dataID} AND p.tagID = $tagID RETURN p LIMIT 5`;
     try{
       result = await session.run(cypher, {tagID: tID});
       const nameRecords = result.records;
-      // const final = result.records.map((item)=> item.get[0].properties);
-      // const count = nameRecords[0].get('p');
-      console.log(nameRecords[0].get['p']);
+      const final = result.records.map((item)=> {
+        let obj = item.get(0).properties;
+        if (typeof (obj.tagID.low) === 'number' && obj.tagID.low !== 0 ) {
+          obj.tagID = obj.tagID.low;
+        } else if (typeof (obj.tagID.high) === 'number' && obj.tagID.high !== 0) {
+          obj.tagID = obj.tagID.high;
+        }
+        return obj;
+      });
+      console.log(final);
       session.close();
      console.timeEnd('getPhotos');
+     return final;
       // console.log(`seeding process took ${new Date().getTime() - t0} ms`);
       driver.close();
     }catch(err) {
@@ -48,9 +53,6 @@ module.exports = {
   },
   createPhotos: async (tID, ptag) => {
     console.time('postPhotos');
-    //create an object first
-    //call unsplash
-
     fetch(
       `https://api.unsplash.com/search/photos/?query=${ptag}&client_id=${key.accessKey}`,
       {
@@ -66,7 +68,6 @@ module.exports = {
         for (let k = 0; k < 5; k++) {
          // await arr.push({photoid: data.results[k].id, username: data.results[k].user.username, link: data.results[k].urls.full, pTag: ptag, tagID: tID});
           const cypher = `MERGE (p:photos {photoid: '${data.results[k].id}', username: '${data.results[k].user.username}', link: '${data.results[k].urls.full}', productTag: $pTag, tagID: $tagID }) RETURN p`;
-          
           try {
             let result = await session.run(cypher,{productTag: ptag, tagID: tID});
             console.log(result.records[0]);
@@ -94,7 +95,7 @@ module.exports = {
     try{
       result = await session.run(cypher, {tagID: tID, username: user});
       const nameRecords = result.records;
-      const count = nameRecords[0].get('p');
+      const count = nameRecords[0].get(0);
       console.log(count);
       session.close();
      console.timeEnd('updateUser');
@@ -114,7 +115,6 @@ module.exports = {
       console.log(count);
       console.timeEnd('delPhotos');
       session.close();
-      // console.log(`seeding process took ${new Date().getTime() - t0} ms`);
       driver.close();
       return count;
     }catch(err) {
