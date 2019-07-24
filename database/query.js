@@ -1,14 +1,14 @@
 /****************testing variables *************************/
-//  const tagID = 50; 
+//  const tagID = 50;
 //  const pTag = 'black tea';
 //  const user = 'hibow';
 /***************environment variables*************************/
 const sequelize = require('sequelize')
 const Photos = require('../models').Photos;
-require('dotenv').config(); 
+require('dotenv').config();
 const performance = require('perf_hooks').performance;
 const db = process.env.DB_NAME;
-
+const dataID = 9000000;
 module.exports = {
   getPhotos: async (tID) => {
     //const start = new Date();
@@ -20,7 +20,7 @@ module.exports = {
                 id: sequelize.where(
             sequelize.literal('id'),
             '>',
-            100000)}, 
+            dataID)},
         limit: 5
       });
       let final = result.map((item) => item.dataValues);
@@ -43,8 +43,8 @@ module.exports = {
            id: sequelize.where(
             sequelize.literal('id'),
             '>',
-            100000)
-            }, 
+            dataID)
+            },
         limit: 5
       });
       let final = result.map((item) => item.dataValues);
@@ -65,8 +65,8 @@ module.exports = {
           id: sequelize.where(
             sequelize.literal('id'),
             '>',
-            100000)
-        }, 
+            dataID)
+        },
         limit: 5
       });
       let final = result.map((item) => item.dataValues);
@@ -77,14 +77,14 @@ module.exports = {
       console.log(`ERR! ${process.env.DB_NAME} query took ${new Date() - start} ms`);
       console.log(err);
     }
-  }, 
+  },
   createPhotos: async (phoId, user, url, ptag, tID) => {
     const start = new Date();
     try{
     const result = await Photos.findOrCreate({
             where: {
-              photoid: phoId, 
-              username: user, 
+              photoid: phoId,
+              username: user,
               link: url,
               productTag: ptag,
               tagID: tID
@@ -110,8 +110,8 @@ module.exports = {
            id: sequelize.where(
             sequelize.literal('id'),
             '>',
-            100000)
-        }, 
+            dataID)
+        },
         limit: 5
         //only work for mysql
        });
@@ -134,8 +134,8 @@ module.exports = {
           id: sequelize.where(
             sequelize.literal('id'),
             '>',
-            100000)
-        }, 
+            dataID)
+        },
         limit: 5
         });
         console.log(result);

@@ -2,7 +2,7 @@ const db = require('./index.js').pgDB;
 const fetch = require('node-fetch');
 const key = require('../../src/unsplashAPI/unsplash.js');
 const limit = 5;
-const dataID = 100002;
+const dataID = 9000000;
 
 module.exports = {
   db: db,
@@ -17,14 +17,22 @@ module.exports = {
       }).catch(err => console.log(err));
   },
   getPhotosFromTag: (pTag, tID) => {
+    console.time('getPhotosTag');
     const query = `SELECT * FROM public."Photos" WHERE "productTag" = '${pTag}' AND "tagID" = ${tID} LIMIT ${limit};`;
       return db.query(query).then((res) => {
+        console.log(res.rows);
+        console.timeEnd('getphotosTag');
+        db.end();
         return res.rows;
       }).catch(err => console.log(err));
   },
   getPhotosFromUser: (user) => {
+    console.time('getPhotosUser');
     const query = `SELECT * FROM public."Photos" WHERE "username" = '${user}';`;
     return db.query(query).then((res) => {
+      console.log(res.rows);
+      console.timeEnd('getphotosUser');
+      db.end();
       return res.rows;
     }).catch(err => console.log(err));
   },
@@ -44,8 +52,9 @@ module.exports = {
       db.end();
       return res.rows;
     }).catch(err => console.log(err));
-  }, 
+  },
   createPhotos: (tID, ptag) => {
+
     fetch(
       `https://api.unsplash.com/search/photos/?query=${ptag}&client_id=${key.accessKey}`,
       {
@@ -57,25 +66,43 @@ module.exports = {
     )
       .then((response) => response.json())
       .then(async (data) => {
-        for (let k = 0; k < 5; k++) {
+        // for (let k = 0; k < 5; k++) {
+          console.time('createPhotos');
         const query = `INSERT INTO public."Photos" (photoid, link, username, "productTag", "tagID")
-                     SELECT '${data.results[k].id}', '${data.results[k].urls.full}', '${data.results[k].user.username}', '${ptag}', '${tID}'
-                     WHERE NOT EXISTS (SELECT 1 FROM public."Photos" WHERE "tagID" = ${tID});`
+                    VALUES ('${data.results[0].id}', '${data.results[0].urls.full}', '${data.results[0].user.username}', '${ptag}', '${tID}');`;
           try {
             let res = await db.query(query)
-            console.log(res.rows);
+            console.log(res.rowCount);
+            console.timeEnd('createPhotos');
+            db.end();
+            return res.rowCount? res.rowCount:`none!`;
           }catch(err) {
             console.log(err);
+            console.timeEnd('createPhotos');
+            return `create ERR!`;
           }
-        }
-        await console.log('done');
-        return;
         })
    },
   updateUser: (user, tID) => {
-
+    console.time('updateUser');
+    const queryStr = `UPDATE public."Photos" SET username = '${user}' WHERE id IN (
+      SELECT id FROM public."Photos" WHERE id >= ${dataID} AND "tagID" = ${tID} LIMIT 5)`;
+    return db.query(queryStr).then((res) => {
+      console.log(res.rowCount);
+      console.timeEnd('updateUser');
+      db.end();
+      return res.rowCount? res.rowCount : `none!`;
+    }).catch(err => console.log(err));
   },
   deletePhotos: (tID) => {
-
+    console.time('deletePhotos');
+    const queryStr = `DELETE FROM public."Photos" WHERE id IN (
+      SELECT id FROM public."Photos" WHERE id >= ${dataID} AND "tagID" = ${tID} LIMIT 1)`;
+    return db.query(queryStr).then((res) => {
+      console.log(res.rowCount);
+      console.timeEnd('deletePhotos');
+      db.end();
+      return res.rowCount? res.rowCount : `none!`;
+    }).catch(err => console.log(err));
   }
 }

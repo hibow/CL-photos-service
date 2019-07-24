@@ -2,6 +2,17 @@ const {driver, session} = require('./index.js');
 const fetch = require('node-fetch');
 const key = require('../../src/unsplashAPI/unsplash.js');
 const dataID = 100002;
+
+const getIntfromObj= (obj) => {
+  for (let key in obj) {
+    if (typeof obj[key] === 'object') {
+      return getIntfromObj(obj[key]);
+    } else if (typeof obj[key] === 'number' && obj[key] !== 0) {
+      return obj[key];
+    }
+  }
+  return null;
+}
 module.exports = {
   getPhotosCounts: async (tID) => {
     console.time('getCounts');
@@ -11,45 +22,80 @@ module.exports = {
       result = await session.run(cypher, {tagID: tID});
       const nameRecords = result.records;
       const count = nameRecords[0].get('count');
-      console.log(count);
+      let final = getIntfromObj(count);
+      console.log(final);
       session.close();
-      // console.log(`took ${performance.now() - t0} ms`)
      console.timeEnd('getCounts');
-     return count;
-      driver.close();
+     driver.close();
+     return final;
     }catch(err) {
       console.log(err);
+      console.timeEnd('getCounts');
+      return `GET err!`;
     }
   },
   getPhotos: async(tID) => {
     console.time('getPhotos');
     const cypher = `MATCH (p:photos) WHERE id(p) >= ${dataID} AND p.tagID = $tagID RETURN p LIMIT 5`;
     try{
-      result = await session.run(cypher, {tagID: tID});
-      const nameRecords = result.records;
-      const final = result.records.map((item)=> {
+      let result = await session.run(cypher, {tagID: tID});
+      let final = result.records.map((item)=> {
         let obj = item.get(0).properties;
-        if (typeof (obj.tagID.low) === 'number' && obj.tagID.low !== 0 ) {
-          obj.tagID = obj.tagID.low;
-        } else if (typeof (obj.tagID.high) === 'number' && obj.tagID.high !== 0) {
-          obj.tagID = obj.tagID.high;
-        }
+        obj.tagID = getIntfromObj(obj);
         return obj;
       });
       console.log(final);
       session.close();
      console.timeEnd('getPhotos');
+     driver.close();
      return final;
-      // console.log(`seeding process took ${new Date().getTime() - t0} ms`);
-      driver.close();
     }catch(err) {
       console.log(err);
+      console.timeEnd('getPhotos');
+      return `GET err!`;
     }
   },
-  getPhotosFromTag: (pTag, tID) => {
-  
+  getPhotosFromTag: async (pTag) => {
+    console.time('getPhotosFromTag');
+    const cypher = `MATCH (p:photos) WHERE id(p) >= ${dataID} AND p.productTag = $productTag RETURN p LIMIT 5`;
+    try{
+      let result = await session.run(cypher, {productTag: pTag});
+      const final = result.records.map((item)=> {
+        let obj = item.get(0).properties;
+        obj.tagID = getIntfromObj(obj);
+        return obj;
+      });
+      console.log(final.length ? final: `none!`);
+      session.close();
+     console.timeEnd('getPhotosFromTag');
+     driver.close();
+     return final.length ? final: `none!`;
+    }catch(err) {
+      console.log(err);
+      console.timeEnd('getPhotosFromTag');
+      return `GET err!`;
+    }
   },
-  getPhotosFromUser: (user) => {
+  getPhotosFromUser: async (user) => {
+    console.time('getPhotosFromUser');
+    const cypher = `MATCH (p:photos) WHERE id(p) >= ${dataID} AND p.username = $username RETURN p LIMIT 5`;
+    try{
+      let result = await session.run(cypher, {username: user});
+      const final = result.records.map((item)=> {
+        let obj = item.get(0).properties;
+        obj.tagID = getIntfromObj(obj);
+        return obj;
+      });
+      console.log(final.length ? final: `none!`);
+      session.close();
+     console.timeEnd('getPhotosFromUser');
+     driver.close();
+     return final.length ? final: `none!`;
+    }catch(err) {
+      console.log(err);
+      console.timeEnd('getPhotosFromUser');
+      return `GET err!`;
+    }
   },
   createPhotos: async (tID, ptag) => {
     console.time('postPhotos');
@@ -64,61 +110,57 @@ module.exports = {
     )
       .then((response) => response.json())
       .then(async (data) => {
-        let arr = [];
-        for (let k = 0; k < 5; k++) {
-         // await arr.push({photoid: data.results[k].id, username: data.results[k].user.username, link: data.results[k].urls.full, pTag: ptag, tagID: tID});
-          const cypher = `MERGE (p:photos {photoid: '${data.results[k].id}', username: '${data.results[k].user.username}', link: '${data.results[k].urls.full}', productTag: $pTag, tagID: $tagID }) RETURN p`;
+          const cypher = `MERGE (p:photos {photoid: '${data.results[0].id}', username: '${data.results[0].user.username}',
+                          link: '${data.results[0].urls.full}', productTag: $productTag, tagID: $tagID }) RETURN p`;
           try {
             let result = await session.run(cypher,{productTag: ptag, tagID: tID});
-            console.log(result.records[0]);
+            let final = result.records[0].get(0).properties;
+            console.log(final);
+            session.close();
+            console.timeEnd('postPhotos');
+            driver.close();
+            return final;
           }catch (err) {
             console.log(err);
+            console.timeEnd('postPhotos');
           }
-        }
-        // list = arr;
-        // const cypher = `UNWIND {list} as row MERGE (p:photos {photoid: row.photoid, username: row.username, link: row.link, pTag: row.pTag, tagID: row.tagID})`;
-        //   try {
-        //     let result = await session.run(cypher, {list: list});
-        //     console.log(result.records[0]);
-        //     session.close();
-        //   }catch (err) {
-        //     console.log(err);
-        //   }
-        session.close();
-          await console.timeEnd('postPhotos');
-          driver.close();
         })
   },
   updateUser:async (user, tID) => {
     console.time('updateUser');
-    const cypher = `MATCH (p:photos) WHERE id(p) >= ${dataID} AND p.tagID = $tagID AND NOT p.username = $username SET p.username = $username RETURN p  LIMIT 5`;
+    const cypher = `MATCH (p:photos) WHERE id(p) >= ${dataID} AND p.tagID = $tagID AND NOT p.username = $username SET p.username = $username RETURN p LIMIT 5`;
     try{
-      result = await session.run(cypher, {tagID: tID, username: user});
-      const nameRecords = result.records;
-      const count = nameRecords[0].get(0);
-      console.log(count);
+      let result = await session.run(cypher, {tagID: tID, username: user});
+      let final = [];
+      for (let i = 0; i < 5; i++) {
+        final.push(result.records[i].get('p').properties);
+      }
+      console.log(final);
+      let msg = 'update done!';
       session.close();
      console.timeEnd('updateUser');
-      // console.log(`seeding process took ${new Date().getTime() - t0} ms`);
       driver.close();
+      return msg;
     }catch(err) {
       console.log(err);
+      console.timeEnd('updateUser');
     }
   },
   deletePhotos: async (tID) => {
     console.time('delPhotos');;
-    const cypher = `MATCH (p:photos) WHERE id(p) >= ${dataID} AND p.tagID = $tagID WITH p LIMIT 5 DETACH DELETE p`;
+    const cypher = `MATCH (p:photos) WHERE id(p) >= ${dataID} AND p.tagID = $tagID WITH p LIMIT 1 DETACH DELETE p`;
     try{
       result = await session.run(cypher, {tagID: tID});
-      const nameRecords = result.records;
-      const count = nameRecords[0];
+      const count = result.records;
       console.log(count);
+      let msg = 'delete done!'
       console.timeEnd('delPhotos');
       session.close();
       driver.close();
-      return count;
+      return msg;
     }catch(err) {
       console.log(err);
+      console.timeEnd('delPhotos');
     }
   }
 }

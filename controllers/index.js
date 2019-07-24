@@ -2,8 +2,10 @@ const models = require('../models/index.js');
 const fetch = require('node-fetch');
 const Photos = require('../models').Photos;
 const key = require('../src/unsplashAPI/unsplash.js');
-const query = require('../database/query.js');
-//written for mysql 
+const env = require('../config.js');
+const query = (env.db_name === 'neo4j'? require('../database/neo4j/query.js')
+             : require('../database/query.js'));
+
 module.exports = {
   post: (req, res) => {
     const ptag = req.params.ptag;
@@ -27,7 +29,11 @@ module.exports = {
   get: (req, res) => {
     const pid = req.params.id;
     return query.getPhotos(pid)
-      .then(photos => res.json(photos))
+      .then(photos => {
+        console.log(pid);
+        console.log(photos)
+        res.json(photos);
+      })
       .catch(err => console.log(err))
   },
   delete: (req, res) => {

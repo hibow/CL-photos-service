@@ -1,10 +1,8 @@
 //import session
 const {driver, session} = require('./index.js');
-//import json file 
+//import json file
 const nodelabel = 'photos';
 const totalBatch = 10000;
-//create node
-//node label Photos
 
 //import json file by apoc.load.json
 //store photos.js in neo4j desktop import folder

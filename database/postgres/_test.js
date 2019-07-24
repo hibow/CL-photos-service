@@ -1,5 +1,7 @@
 
 const {getPhotos, getPhotosCounts, updateUser, deletePhotos, createPhotos} = require('./controller.js');
 
-// createPhotos(200001,'sparking water');
-getPhotos(1);
+createPhotos(200003,'kiwi');
+// getPhotos(1);
+// updateUser('hibow', 23);
+// deletePhotos(23);
