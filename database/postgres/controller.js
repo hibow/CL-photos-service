@@ -18,20 +18,20 @@ module.exports = {
   },
   getPhotosFromTag: (pTag, tID) => {
     console.time('getPhotosTag');
-    const query = `SELECT * FROM public."Photos" WHERE "productTag" = '${pTag}' AND "tagID" = ${tID} LIMIT ${limit};`;
+    const query = `SELECT * FROM public."Photos" WHERE id >= ${dataID} AND "productTag" = '${pTag}' LIMIT ${limit};`;
       return db.query(query).then((res) => {
         console.log(res.rows);
-        console.timeEnd('getphotosTag');
+        console.timeEnd('getPhotosTag');
         db.end();
         return res.rows;
       }).catch(err => console.log(err));
   },
   getPhotosFromUser: (user) => {
     console.time('getPhotosUser');
-    const query = `SELECT * FROM public."Photos" WHERE "username" = '${user}';`;
+    const query = `SELECT * FROM public."Photos" WHERE id >= ${dataID} AND "username" = '${user}' LIMIT ${limit};`;
     return db.query(query).then((res) => {
       console.log(res.rows);
-      console.timeEnd('getphotosUser');
+      console.timeEnd('getPhotosUser');
       db.end();
       return res.rows;
     }).catch(err => console.log(err));
@@ -66,7 +66,6 @@ module.exports = {
     )
       .then((response) => response.json())
       .then(async (data) => {
-        // for (let k = 0; k < 5; k++) {
           console.time('createPhotos');
         const query = `INSERT INTO public."Photos" (photoid, link, username, "productTag", "tagID")
                     VALUES ('${data.results[0].id}', '${data.results[0].urls.full}', '${data.results[0].user.username}', '${ptag}', '${tID}');`;

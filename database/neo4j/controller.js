@@ -1,7 +1,7 @@
 const {driver, session} = require('./index.js');
 const fetch = require('node-fetch');
 const key = require('../../src/unsplashAPI/unsplash.js');
-const dataID = 100002;
+const dataID = 9000000;
 
 const getIntfromObj= (obj) => {
   for (let key in obj) {
@@ -15,6 +15,9 @@ const getIntfromObj= (obj) => {
 }
 module.exports = {
   getPhotosCounts: async (tID) => {
+    if (typeof tID !== 'number') {
+      tID = parseInt(tID);
+    }
     console.time('getCounts');
     let result;
     const cypher = `MATCH (p:photos) WHERE p.tagID = $tagID RETURN count(*) as count`;
@@ -34,10 +37,13 @@ module.exports = {
       return `GET err!`;
     }
   },
-  getPhotos: async(tID) => {
+  getPhotos: async (tID) => {
     console.time('getPhotos');
-    const cypher = `MATCH (p:photos) WHERE id(p) >= ${dataID} AND p.tagID = $tagID RETURN p LIMIT 5`;
+    if (typeof tID !== 'number') {
+      tID = parseInt(tID);
+    }
     try{
+      const cypher = `MATCH (p:photos) WHERE id(p) >= ${dataID} AND p.tagID = $tagID RETURN p LIMIT 5`;
       let result = await session.run(cypher, {tagID: tID});
       let final = result.records.map((item)=> {
         let obj = item.get(0).properties;
@@ -46,9 +52,9 @@ module.exports = {
       });
       console.log(final);
       session.close();
-     console.timeEnd('getPhotos');
-     driver.close();
-     return final;
+      console.timeEnd('getPhotos');
+      driver.close();
+      return final.length? final : `none!`;
     }catch(err) {
       console.log(err);
       console.timeEnd('getPhotos');
@@ -127,40 +133,49 @@ module.exports = {
         })
   },
   updateUser:async (user, tID) => {
+    if (typeof tID !== 'number') {
+      tID = parseInt(tID);
+    }
     console.time('updateUser');
     const cypher = `MATCH (p:photos) WHERE id(p) >= ${dataID} AND p.tagID = $tagID AND NOT p.username = $username SET p.username = $username RETURN p LIMIT 5`;
     try{
       let result = await session.run(cypher, {tagID: tID, username: user});
-      let final = [];
-      for (let i = 0; i < 5; i++) {
-        final.push(result.records[i].get('p').properties);
-      }
+      let final = result.records.map((item)=> {
+        let obj = item.get('p').properties;
+        obj.tagID = getIntfromObj(obj);
+        return obj;
+      });
       console.log(final);
       let msg = 'update done!';
       session.close();
      console.timeEnd('updateUser');
       driver.close();
-      return msg;
+      return final.length? msg: `none!`;
     }catch(err) {
       console.log(err);
       console.timeEnd('updateUser');
+      return `update ERR!`;
     }
   },
   deletePhotos: async (tID) => {
+    if (typeof tID !== 'number') {
+      tID = parseInt(tID);
+    }
     console.time('delPhotos');;
-    const cypher = `MATCH (p:photos) WHERE id(p) >= ${dataID} AND p.tagID = $tagID WITH p LIMIT 1 DETACH DELETE p`;
+    const cypher = `MATCH (p:photos) WHERE id(p) >= ${dataID} AND p.tagID = $tagID WITH p LIMIT 1 DETACH DELETE p RETURN p `;
     try{
       result = await session.run(cypher, {tagID: tID});
-      const count = result.records;
-      console.log(count);
+      const count = result.records[0].get('p').identity;
+      console.log(getIntfromObj(count));
       let msg = 'delete done!'
       console.timeEnd('delPhotos');
       session.close();
       driver.close();
-      return msg;
+      return typeof count === 'object' ? msg : `none!`;
     }catch(err) {
       console.log(err);
       console.timeEnd('delPhotos');
+      return `delete ERR!`;
     }
   }
 }

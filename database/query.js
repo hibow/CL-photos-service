@@ -1,18 +1,12 @@
-/****************testing variables *************************/
-//  const tagID = 50;
-//  const pTag = 'black tea';
-//  const user = 'hibow';
-/***************environment variables*************************/
-const sequelize = require('sequelize')
+const sequelize = require('sequelize');
+const db = require('../models/index.js');
 const Photos = require('../models').Photos;
 require('dotenv').config();
-const performance = require('perf_hooks').performance;
-const db = process.env.DB_NAME;
+
 const dataID = 9000000;
 module.exports = {
   getPhotos: async (tID) => {
-    //const start = new Date();
-    var t0 = performance.now();
+    console.time('getPhotos');
     let result;
     try{
       result = await Photos.findAll({
@@ -24,22 +18,22 @@ module.exports = {
         limit: 5
       });
       let final = result.map((item) => item.dataValues);
-      //console.log(final);
-      var t1 = performance.now();
-      console.log("getPhotos " + (t1 - t0) + " milliseconds.");
+      console.log(final);
+      console.timeEnd('getPhotos');
+      db.sequelize.close();
       return final;
     } catch(err){
-      console.log(`ERR! ${db} query took ${(t1 - t0)}  ms`);
+      console.timeEnd('getPhotos');
       console.log(err);
+      return 'GET ERR!';
     }
   },
   getPhotosFromTag: async (pTag, tID) => {
-    const start = new Date();
+    console.time('getPhotosTag');
     try{
     const result = await Photos.findAll({
         where: {
           productTag: pTag,
-          tagID: tID,
            id: sequelize.where(
             sequelize.literal('id'),
             '>',
@@ -48,16 +42,18 @@ module.exports = {
         limit: 5
       });
       let final = result.map((item) => item.dataValues);
-      console.log(`${db} query took ${new Date() - start} ms`);
       console.log(final);
+      console.timeEnd('getPhotosTag');
+      db.sequelize.close();
       return final;
     } catch(err){
-      console.log(`ERR! ${db} query took ${new Date() - start} ms`);
+      console.timeEnd('getPhotosTag');
       console.log(err);
+      return `GET FROMTAG ERR!`;
     }
   },
   getPhotosFromUser: async (user) => {
-    const start = new Date();
+    console.time('getPhotosUser');
     try{
     const result = await Photos.findAll({
         where: {
@@ -70,16 +66,16 @@ module.exports = {
         limit: 5
       });
       let final = result.map((item) => item.dataValues);
-      console.log(`${process.env.DB_NAME} query took ${new Date() - start} ms`);
-      // console.log(final);
+      console.log(final);
+      console.timeEnd('getPhotosUser');
       return final;
     } catch(err){
-      console.log(`ERR! ${process.env.DB_NAME} query took ${new Date() - start} ms`);
+      console.timeEnd('getPhotosUser');
       console.log(err);
     }
   },
   createPhotos: async (phoId, user, url, ptag, tID) => {
-    const start = new Date();
+    console.timeEnd('postPhotos');
     try{
     const result = await Photos.findOrCreate({
             where: {
@@ -92,15 +88,15 @@ module.exports = {
             default: {tagID: tID}
           });
       let msg = 'Done!';
-      console.log(`${db} query took ${new Date() - start} ms`);
+      console.timeEnd('postPhotos');
       return msg;
     } catch(err) {
-      console.log(`ERR! ${db} query took ${new Date() - start} ms`);
+      console.timeEnd('postPhotos');
       console.log(err);
     }
   },
   updateUser: async (user, tID) => {
-    const start = new Date();
+    console.time('updateUser');
     try{
     let result = await Photos.update({
         username: user
@@ -118,15 +114,15 @@ module.exports = {
       let final = result.map((item) => item.dataValues);
       console.log(final);
       let msg = 'DONE';
-      await console.log(`${db} query took ${new Date() - start} ms`);
+      console.timeEnd('updateUser');
       return msg;
     } catch(err){
-      console.log(`ERR! ${process.env.DB_NAME} query took ${new Date() - start} ms`);
+      console.timeEnd('updateUser');
       console.log(err);
     }
   },
     deletePhotos: async (tID) => {
-    const start = new Date();
+    console.time('deletePhotos');
       try {
         let result = await Photos.destroy({
           where: {
@@ -140,10 +136,10 @@ module.exports = {
         });
         console.log(result);
       let msg = `Delete!`;
-      console.log(`Query took ${new Date() - start} ms`);
+      console.timeEnd('deletePhotos');
       return msg;
       } catch(err) {
-        console.log(`Query took ${new Date() - start} ms`);
+        console.timeEnd('deletePhotos');
         console.log(err);
       }
   }
