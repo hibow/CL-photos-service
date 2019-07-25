@@ -19,7 +19,8 @@ getPhotos(10);
 } else if (env.db_name === 'neo4j') {
   console.log(env.db_name);
   const {getPhotos, getPhotosCounts, updateUser, deletePhotos, createPhotos, getPhotosFromTag, getPhotosFromUser} = require('./neo4j/controller.js');
-deletePhotos(10);
+  // const {getPhotos, getPhotosCounts, updateUser, deletePhotos, createPhotos, getPhotosFromTag, getPhotosFromUser} = require('./neo4j/httpQuery.js');
+getPhotos(10);
 }
 
 

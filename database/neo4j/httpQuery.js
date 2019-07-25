@@ -1,7 +1,8 @@
-const {driver, session} = require('./index.js');
+
 const fetch = require('node-fetch');
 const key = require('../../src/unsplashAPI/unsplash.js');
 const dataID = 10000;
+const cypherReq = require('./index.js');
 
 const getIntfromObj= (obj) => {
   for (let key in obj) {
@@ -37,29 +38,37 @@ module.exports = {
       return `GET err!`;
     }
   },
-  getPhotos: async (tID) => {
+//   var query="MATCH (p:photos) WHERE id(p) >= 9000000 AND p.tagID = $tagID RETURN p LIMIT $limit"
+// var params={tagID: 23, limit: 5}
+// var cb=function(err,data) { console.log(JSON.stringify(data)) }
+
+// cypher(query,params,cb)
+
+  getPhotos: (tID) => {
     console.time('getPhotos');
     if (typeof tID !== 'number') {
       tID = parseInt(tID);
     }
-    try{
+      const cb = (err,data) => {
+        let final = data.results[0].data.map((item)=> {
+          let obj = item.row[0];
+          return obj;
+        })
+        console.log(final);
+        console.timeEnd('getPhotos');
+      }
       const cypher = `MATCH (p:photos) WHERE id(p) >= ${dataID} AND p.tagID = $tagID RETURN p LIMIT 5`;
-      let result = await session.run(cypher, {tagID: tID});
-      let final = result.records.map((item)=> {
-        let obj = item.get(0).properties;
-        obj.tagID = getIntfromObj(obj);
-        return obj;
-      });
-      console.log(final);
-      session.close();
-      console.timeEnd('getPhotos');
-      driver.close();
-      return final.length? final : `none!`;
-    }catch(err) {
-      console.log(err);
-      console.timeEnd('getPhotos');
-      return `GET err!`;
-    }
+      cypherReq(cypher, {tagID: tID},cb);
+      // let final = result.records.map((item)=> {
+      //   let obj = item.get(0).properties;
+      //   obj.tagID = getIntfromObj(obj);
+      //   return obj;
+      // });
+      // console.log(result);
+      // session.close();
+
+      // driver.close();
+      // return final.length? final : `none!`;
   },
   getPhotosFromTag: async (pTag) => {
     console.time('getPhotosFromTag');

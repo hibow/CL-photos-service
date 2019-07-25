@@ -10,24 +10,25 @@ const driver = neo4j.driver(env.db_host, neo4j.auth.basic(env.db_username, env.d
 // Note: Always make sure to close sessions when you are done using them!
 const session = driver.session();
 
+///////////HTTP endpoint////////////
+// var r=require("request");
+// const env = require('../../config.js');
+// const basicAuth = 'Basic bmVvNGo6cm9vdHJvb3Q';
+// var txUrl = "http://localhost:7474/db/data/transaction/commit";
 
-// const personName = 'Alice';
-// const resultPromise = session.run(
-//   'CREATE (a:Person {name: $name}) RETURN a',
-//   {name: personName}
-// );
 
-// resultPromise.then(result => {
-//   session.close();
+// const cypherReq = (query,params,cb) => {
+//   r.post({uri:txUrl,
+//           json:{statements:[{statement:query,parameters:params}]},
+//           headers: {
+//             Authorization: basicAuth,
+//           }},
+//          function(err,res) { cb(err,res.body)});
+// }
 
-//   const singleRecord = result.records[0];
-//   const node = singleRecord.get(0);
+// module.exports = cypherReq;
 
-//   console.log(node.properties.name);
 
-//   // on application exit:
-//   driver.close();
-// });
 
 module.exports = {
   session,
