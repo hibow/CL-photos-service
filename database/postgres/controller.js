@@ -8,7 +8,9 @@ module.exports = {
   db: db,
   getPhotos: (tID) => {
     console.time('getPhotos');
-    const queryStr = `SELECT * FROM public."Photos" WHERE id >= ${dataID} AND "tagID" = ${tID} LIMIT ${limit};`;
+    const queryStr = `SELECT * FROM public."Photos"
+                    WHERE "tagID" = (SELECT "tagID" FROM public."Photos" WHERE id = ${tID}) LIMIT 5`;
+    // const queryStr = `SELECT * FROM public."Photos" WHERE id >= ${dataID} AND "tagID" = ${tID} LIMIT ${limit};`;
       return db.query(queryStr).then((res) => {
         console.log(res.rows);
         console.timeEnd('getPhotos');
@@ -16,9 +18,11 @@ module.exports = {
         return res.rows;
       }).catch(err => console.log(err));
   },
-  getPhotosFromTag: (pTag, tID) => {
+  getPhotosFromTag: (tID) => {
     console.time('getPhotosTag');
-    const query = `SELECT * FROM public."Photos" WHERE id >= ${dataID} AND "productTag" = '${pTag}' LIMIT ${limit};`;
+    const query = `SELECT * FROM public."Photos"
+    WHERE "productTag" = (SELECT "productTag" FROM public."Photos" WHERE id = ${tID}) LIMIT 5`;
+    // const query = `SELECT * FROM public."Photos" WHERE id >= ${dataID} AND "productTag" = '${pTag}' LIMIT ${limit};`;
       return db.query(query).then((res) => {
         console.log(res.rows);
         console.timeEnd('getPhotosTag');
@@ -26,9 +30,11 @@ module.exports = {
         return res.rows;
       }).catch(err => console.log(err));
   },
-  getPhotosFromUser: (user) => {
+  getPhotosFromUser: (tID) => {
     console.time('getPhotosUser');
-    const query = `SELECT * FROM public."Photos" WHERE id >= ${dataID} AND "username" = '${user}' LIMIT ${limit};`;
+    const query = `SELECT * FROM public."Photos"
+    WHERE "username" = (SELECT "username" FROM public."Photos" WHERE id = ${tID}) LIMIT 5`;
+    // const query = `SELECT * FROM public."Photos" WHERE id >= ${dataID} AND "username" = '${user}' LIMIT ${limit};`;
     return db.query(query).then((res) => {
       console.log(res.rows);
       console.timeEnd('getPhotosUser');
@@ -84,8 +90,11 @@ module.exports = {
    },
   updateUser: (user, tID) => {
     console.time('updateUser');
-    const queryStr = `UPDATE public."Photos" SET username = '${user}' WHERE id IN (
-      SELECT id FROM public."Photos" WHERE id >= ${dataID} AND "tagID" = ${tID} LIMIT 5)`;
+    const queryStr = `UPDATE public."Photos" SET username = '${user}'
+               WHERE id IN (SELECT id FROM public."Photos"
+               WHERE "tagID" = (SELECT "tagID" FROM public."Photos" WHERE id = ${tID}) LIMIT 5)`;
+    // const queryStr = `UPDATE public."Photos" SET username = '${user}' WHERE id IN (
+    //   SELECT id FROM public."Photos" WHERE id >= ${dataID} AND "tagID" = ${tID} LIMIT 5)`;
     return db.query(queryStr).then((res) => {
       console.log(res.rowCount);
       console.timeEnd('updateUser');
@@ -95,8 +104,9 @@ module.exports = {
   },
   deletePhotos: (tID) => {
     console.time('deletePhotos');
-    const queryStr = `DELETE FROM public."Photos" WHERE id IN (
-      SELECT id FROM public."Photos" WHERE id >= ${dataID} AND "tagID" = ${tID} LIMIT 1)`;
+    const queryStr = `DELETE FROM public."Photos" WHERE id = ${tID}`;
+    // const queryStr = `DELETE FROM public."Photos" WHERE id IN (
+    //   SELECT id FROM public."Photos" WHERE id >= ${dataID} AND "tagID" = ${tID} LIMIT 1)`;
     return db.query(queryStr).then((res) => {
       console.log(res.rowCount);
       console.timeEnd('deletePhotos');

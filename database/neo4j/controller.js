@@ -1,7 +1,7 @@
 const {driver, session} = require('./index.js');
 const fetch = require('node-fetch');
 const key = require('../../src/unsplashAPI/unsplash.js');
-const dataID = 10000;
+// const dataID = 1000;
 
 const getIntfromObj= (obj) => {
   for (let key in obj) {
@@ -43,8 +43,10 @@ module.exports = {
       tID = parseInt(tID);
     }
     try{
-      const cypher = `MATCH (p:photos) WHERE id(p) >= ${dataID} AND p.tagID = $tagID RETURN p LIMIT 5`;
-      let result = await session.run(cypher, {tagID: tID});
+      // const cypher = `MATCH (p:photos) WHERE id(p) >= ${dataID} AND p.tagID = $tagID RETURN p LIMIT 5`;
+      const cypher = `MATCH (n:photos) WHERE id(n) = ${tID} WITH n.tagID as value Match (m:photos)
+                      WHERE m.tagID = value RETURN m LIMIT 5`;
+      let result = await session.run(cypher, {});
       let final = result.records.map((item)=> {
         let obj = item.get(0).properties;
         obj.tagID = getIntfromObj(obj);
@@ -61,17 +63,19 @@ module.exports = {
       return `GET err!`;
     }
   },
-  getPhotosFromTag: async (pTag) => {
+  getPhotosFromTag: async (tID) => {
     console.time('getPhotosFromTag');
-    const cypher = `MATCH (p:photos) WHERE id(p) >= ${dataID} AND p.productTag = $productTag RETURN p LIMIT 5`;
+    const cypher = `MATCH (n:photos) WHERE id(n) = ${tID} WITH n.productTag as value Match (m:photos)
+    WHERE m.productTag = value RETURN m LIMIT 5`;
+    // const cypher = `MATCH (p:photos) WHERE id(p) >= ${dataID} AND p.productTag = $productTag RETURN p LIMIT 5`;
     try{
-      let result = await session.run(cypher, {productTag: pTag});
+      let result = await session.run(cypher, {});
       const final = result.records.map((item)=> {
         let obj = item.get(0).properties;
         obj.tagID = getIntfromObj(obj);
         return obj;
       });
-      console.log(final.length ? final: `none!`);
+      // console.log(final.length ? final: `none!`);
       session.close();
      console.timeEnd('getPhotosFromTag');
      driver.close();
@@ -82,17 +86,19 @@ module.exports = {
       return `GET err!`;
     }
   },
-  getPhotosFromUser: async (user) => {
+  getPhotosFromUser: async (tID) => {
     console.time('getPhotosFromUser');
-    const cypher = `MATCH (p:photos) WHERE id(p) >= ${dataID} AND p.username = $username RETURN p LIMIT 5`;
+    const cypher = `MATCH (n:photos) WHERE id(n) = ${tID} WITH n.username as value Match (m:photos)
+    WHERE m.username = value RETURN m LIMIT 5`;
+    // const cypher = `MATCH (p:photos) WHERE id(p) >= ${dataID} AND p.username = $username RETURN p LIMIT 5`;
     try{
-      let result = await session.run(cypher, {username: user});
+      let result = await session.run(cypher, {});
       const final = result.records.map((item)=> {
         let obj = item.get(0).properties;
         obj.tagID = getIntfromObj(obj);
         return obj;
       });
-      console.log(final.length ? final: `none!`);
+      // console.log(final.length ? final: `none!`);
       session.close();
      console.timeEnd('getPhotosFromUser');
      driver.close();
@@ -137,16 +143,18 @@ module.exports = {
       tID = parseInt(tID);
     }
     console.time('updateUser');
-    const cypher = `MATCH (p:photos) WHERE id(p) >= ${dataID} AND p.tagID = $tagID AND NOT p.username = $username SET p.username = $username RETURN p LIMIT 5`;
+    const cypher = `MATCH (p:photos) WHERE id(p) = ${tID} WITH p.tagID as tagid MATCH (n:photos)
+                   WHERE n.tagID = tagid SET n.username = $username RETURN n LIMIT 5`;
+    // const cypher = `MATCH (p:photos) WHERE id(p) >= ${dataID} AND p.tagID = $tagID AND NOT p.username = $username SET p.username = $username RETURN p LIMIT 5`;
     try{
-      let result = await session.run(cypher, {tagID: tID, username: user});
+      let result = await session.run(cypher, {username: user});
       let final = result.records.map((item)=> {
-        let obj = item.get('p').properties;
+        let obj = item.get('n').properties;
         obj.tagID = getIntfromObj(obj);
         return obj;
       });
       console.log(final);
-      let msg = 'update done!';
+      let msg = 'update done! '+final;
       session.close();
      console.timeEnd('updateUser');
       driver.close();
@@ -161,17 +169,20 @@ module.exports = {
     if (typeof tID !== 'number') {
       tID = parseInt(tID);
     }
-    console.time('delPhotos');;
-    const cypher = `MATCH (p:photos) WHERE id(p) >= ${dataID} AND p.tagID = $tagID WITH p LIMIT 1 DETACH DELETE p RETURN p `;
+    console.time('delPhotos');
+    const cypher = `MATCH (p:photos) WHERE id(p) = ${tID} DETACH DELETE p RETURN p`;
+    // const cypher = `MATCH (p:photos) WHERE id(p) = ${tID} WITH p.tagID as tagid MATCH (n:photos)
+    //                 WHERE n.tagID = tagid WITH n LIMIT 5 DETACH DELETE n RETURN n`;
+    // const cypher = `MATCH (p:photos) WHERE id(p) >= ${dataID} AND p.tagID = $tagID WITH p LIMIT 1 DETACH DELETE p RETURN p `;
     try{
-      result = await session.run(cypher, {tagID: tID});
-      const count = result.records[0].get('p').identity;
-      console.log(getIntfromObj(count));
-      let msg = 'delete done!'
+      result = await session.run(cypher, {});
+      let final = result.records.length? getIntfromObj(result.records[0].get('p').identity): `none`;
+      let msg = `delete id:${final}!`;
+      console.log(msg);
       console.timeEnd('delPhotos');
       session.close();
       driver.close();
-      return typeof count === 'object' ? msg : `none!`;
+      return msg;
     }catch(err) {
       console.log(err);
       console.timeEnd('delPhotos');

@@ -11,16 +11,21 @@ if (env.db_name === 'mysql') {
 
   const {getPhotos, getPhotosCounts, updateUser, deletePhotos, createPhotos, getPhotosFromTag, getPhotosFromUser} = require('./postgres/controller.js');
   // createPhotos(3005,'converse');
-getPhotos(10);
-// getPhotosFromTag('pot');
-// getPhotosFromUser('beccatapert');
-// updateUser('hibow', 10);
-// deletePhotos(10);
+// getPhotos(9900000);
+// getPhotosFromTag(9990000);
+// getPhotosFromUser(9933333);
+// updateUser('hibow', 9999000);
+deletePhotos(9990900);
 } else if (env.db_name === 'neo4j') {
   console.log(env.db_name);
   const {getPhotos, getPhotosCounts, updateUser, deletePhotos, createPhotos, getPhotosFromTag, getPhotosFromUser} = require('./neo4j/controller.js');
   // const {getPhotos, getPhotosCounts, updateUser, deletePhotos, createPhotos, getPhotosFromTag, getPhotosFromUser} = require('./neo4j/httpQuery.js');
-getPhotos(10);
+// getPhotos(9900000);
+// getPhotosFromTag(9990000)
+// getPhotosFromUser(9900000)
+// createPhotos(355, 'life')
+// updateUser('baba', 90000)
+deletePhotos(9999999)
 }
 
 
