@@ -3,8 +3,8 @@ const fetch = require('node-fetch');
 const Photos = require('../models').Photos;
 const key = require('../src/unsplashAPI/unsplash.js');
 const env = require('../config.js');
-const query = (env.db_name === 'neo4j'? require('../database/neo4j/query.js')
-             : require('../database/query.js'));
+const query = (env.db_name === 'neo4j'? require('../database/neo4j/controller.js')
+             : require('../database/postgres/controller.js'));
 
 module.exports = {
   post: (req, res) => {
@@ -23,7 +23,10 @@ module.exports = {
       .then((data) => {
          return query.createPhotos(data.results[0].id, data.results[0].user.username, data.results[0].urls.full, ptag, pid)
       })
-      .then(result => res.json(result))
+      .then(result => {
+        console.log(result);
+        res.status(201).json(result);
+      })
       .catch(err => console.log(err))
   },
   get: (req, res) => {
@@ -32,21 +35,36 @@ module.exports = {
       .then(photos => {
         console.log(pid);
         console.log(photos)
-        res.json(photos);
+        res.status(200).json(photos);
       })
       .catch(err => console.log(err))
   },
   delete: (req, res) => {
     const pid = req.params.id;
     return query.deletePhotos(pid)
-      .then(photos => res.json(photos))
+      .then(photos => {
+        console.log(typeof photos);
+        if (photos !== 'none!'){
+          console.log(photos);
+          res.status(200).json(photos);
+        } else {
+          res.status(204).json(photos);
+          //fail to send json(photos) it will become an empty object
+        }
+      })
       .catch(err => console.log(err))
   },
   update: (req, res) => {
     const pid = req.params.id;
     const puser = req.params.user;
     return query.updateUser(puser, pid)
-     .then(photos => res.json(photos))
+     .then(photos => {
+       if (photos !=='none!'){
+         res.status(200).json(photos);
+       } else {
+         res.status(204).send(photos);
+       }
+      })
      .catch(err => console.log(err))
     }
 }

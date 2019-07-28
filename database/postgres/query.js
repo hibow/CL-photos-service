@@ -5,6 +5,7 @@ const limit = 5;
 const dataID = 9000000;
 
 module.exports = {
+  db: db,
   getPhotos: (tID) => {
     console.time('getPhotos');
     const queryStr = `SELECT * FROM public."Photos"
@@ -13,7 +14,7 @@ module.exports = {
       return db.query(queryStr).then((res) => {
         console.log(res.rows);
         console.timeEnd('getPhotos');
-        // db.end(); //need to close for api test
+        // db.end();
         return res.rows;
       }).catch(err => console.log(err));
   },
@@ -58,34 +59,34 @@ module.exports = {
       return res.rows;
     }).catch(err => console.log(err));
   },
-  createPhotos: async (phoId, user, url, ptag, tID) => {
+  createPhotos: (tID, ptag) => {
 
-    // fetch(
-    //   `https://api.unsplash.com/search/photos/?query=${ptag}&client_id=${key.accessKey}`,
-    //   {
-    //     method: 'GET',
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //     },
-    //   },
-    // )
-    //   .then((response) => response.json())
-    //   .then(async (data) => {
+    fetch(
+      `https://api.unsplash.com/search/photos/?query=${ptag}&client_id=${key.accessKey}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      },
+    )
+      .then((response) => response.json())
+      .then(async (data) => {
           console.time('createPhotos');
         const query = `INSERT INTO public."Photos" (photoid, link, username, "productTag", "tagID")
-                    VALUES ('${phoId}', '${user}', '${url}', '${ptag}', '${tID}');`;
+                    VALUES ('${data.results[0].id}', '${data.results[0].urls.full}', '${data.results[0].user.username}', '${ptag}', '${tID}');`;
           try {
             let res = await db.query(query)
             console.log(res.rowCount);
             console.timeEnd('createPhotos');
-            // db.end();
+            db.end();
             return res.rowCount? res.rowCount:`none!`;
           }catch(err) {
             console.log(err);
             console.timeEnd('createPhotos');
             return `create ERR!`;
           }
-        // })
+        })
    },
   updateUser: (user, tID) => {
     console.time('updateUser');
@@ -97,7 +98,7 @@ module.exports = {
     return db.query(queryStr).then((res) => {
       console.log(res.rowCount);
       console.timeEnd('updateUser');
-      // db.end();
+      db.end();
       return res.rowCount? res.rowCount : `none!`;
     }).catch(err => console.log(err));
   },
@@ -107,10 +108,10 @@ module.exports = {
     // const queryStr = `DELETE FROM public."Photos" WHERE id IN (
     //   SELECT id FROM public."Photos" WHERE id >= ${dataID} AND "tagID" = ${tID} LIMIT 1)`;
     return db.query(queryStr).then((res) => {
-      console.log(res.rowCount);
+      console.log(!res.rowCount);
       console.timeEnd('deletePhotos');
       // db.end();
-      return res.rowCount? res.rowCount : 'none!';
+      return !res.rowCount? `none!`:res.rowCount;
     }).catch(err => console.log(err));
   }
 }

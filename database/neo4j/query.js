@@ -1,6 +1,7 @@
-//this is for CRUD API
 const {driver, session} = require('./index.js');
-const dataID = 9000000;
+const fetch = require('node-fetch');
+const key = require('../../src/unsplashAPI/unsplash.js');
+// const dataID = 1000;
 
 const getIntfromObj= (obj) => {
   for (let key in obj) {
@@ -42,10 +43,10 @@ module.exports = {
       tID = parseInt(tID);
     }
     try{
-      const cypher = `MATCH (n:photos) WHERE id(n) = ${tID} WITH n.tagID as value Match (m:photos)
-      WHERE m.tagID = value RETURN m LIMIT 5`;
       // const cypher = `MATCH (p:photos) WHERE id(p) >= ${dataID} AND p.tagID = $tagID RETURN p LIMIT 5`;
-      let result = await session.run(cypher, {tagID: tID});
+      const cypher = `MATCH (n:photos) WHERE id(n) = ${tID} WITH n.tagID as value Match (m:photos)
+                      WHERE m.tagID = value RETURN m LIMIT 5`;
+      let result = await session.run(cypher, {});
       let final = result.records.map((item)=> {
         let obj = item.get(0).properties;
         obj.tagID = getIntfromObj(obj);
@@ -108,26 +109,23 @@ module.exports = {
       return `GET err!`;
     }
   },
-  createPhotos: async (phoId, user, url, ptag, tID) => {
-    if (typeof tID !== 'number') {
-      tID = parseInt(tID);
-    }
+  createPhotos: async (tID, ptag) => {
     console.time('postPhotos');
-    // fetch(
-    //   `https://api.unsplash.com/search/photos/?query=${ptag}&client_id=${key.accessKey}`,
-    //   {
-    //     method: 'GET',
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //     },
-    //   },
-    // )
-    //   .then((response) => response.json())
-    //   .then(async (data) => {
-          const cypher = `MERGE (p:photos {photoid: $photoid, username: $username,
-                          link: $link, productTag: $productTag, tagID: $tagID }) RETURN p`;
+    fetch(
+      `https://api.unsplash.com/search/photos/?query=${ptag}&client_id=${key.accessKey}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      },
+    )
+      .then((response) => response.json())
+      .then(async (data) => {
+          const cypher = `MERGE (p:photos {photoid: '${data.results[0].id}', username: '${data.results[0].user.username}',
+                          link: '${data.results[0].urls.full}', productTag: $productTag, tagID: $tagID }) RETURN p`;
           try {
-            let result = await session.run(cypher,{photoid: phoId, username: user, link: url, productTag: ptag, tagID: tID});
+            let result = await session.run(cypher,{productTag: ptag, tagID: tID});
             let final = result.records[0].get(0).properties;
             console.log(final);
             session.close();
@@ -137,8 +135,8 @@ module.exports = {
           }catch (err) {
             console.log(err);
             console.timeEnd('postPhotos');
-            return `POST ERR!`;
           }
+        })
   },
   updateUser:async (user, tID) => {
     if (typeof tID !== 'number') {
@@ -146,7 +144,7 @@ module.exports = {
     }
     console.time('updateUser');
     const cypher = `MATCH (p:photos) WHERE id(p) = ${tID} WITH p.tagID as tagid MATCH (n:photos)
-    WHERE n.tagID = tagid SET n.username = $username RETURN n LIMIT 5`;
+                   WHERE n.tagID = tagid SET n.username = $username RETURN n LIMIT 5`;
     // const cypher = `MATCH (p:photos) WHERE id(p) >= ${dataID} AND p.tagID = $tagID AND NOT p.username = $username SET p.username = $username RETURN p LIMIT 5`;
     try{
       let result = await session.run(cypher, {username: user});
@@ -173,12 +171,14 @@ module.exports = {
     }
     console.time('delPhotos');
     const cypher = `MATCH (p:photos) WHERE id(p) = ${tID} DETACH DELETE p RETURN p`;
+    // const cypher = `MATCH (p:photos) WHERE id(p) = ${tID} WITH p.tagID as tagid MATCH (n:photos)
+    //                 WHERE n.tagID = tagid WITH n LIMIT 5 DETACH DELETE n RETURN n`;
     // const cypher = `MATCH (p:photos) WHERE id(p) >= ${dataID} AND p.tagID = $tagID WITH p LIMIT 1 DETACH DELETE p RETURN p `;
     try{
       result = await session.run(cypher, {});
       let final = result.records.length? getIntfromObj(result.records[0].get('p').identity): `none`;
       let msg = `delete id:${final}!`;
-      // console.log(typeof count === 'object' ? msg : `none!`);
+      console.log(msg);
       console.timeEnd('delPhotos');
       session.close();
       driver.close();
