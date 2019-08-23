@@ -12,3 +12,5 @@ util.js
 /loadtest
 newrelic.js
 newrelic*
+report.json
+report.json.html
