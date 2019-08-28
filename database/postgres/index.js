@@ -1,5 +1,6 @@
 const Pool = require("pg-pool");
-require("dotenv").config();
+require("dotenv").config(); //no err if no .env
+
 //first, createdb dbname
 //default pg confg in env
 
