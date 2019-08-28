@@ -1,5 +1,5 @@
 {
-  "name": "bradyservice",
+  "name": "CL_photo_service",
   "version": "1.0.0",
   "description": "",
   "main": "index.jsx",
@@ -14,17 +14,6 @@
     "test-ui": "jest",
     "test-api": "mocha"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/the-purple-team/bradyService.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/the-purple-team/bradyService/issues"
-  },
-  "homepage": "https://github.com/the-purple-team/bradyService#readme",
   "devDependencies": {
     "@babel/core": "^7.4.4",
     "@babel/preset-env": "^7.4.4",
