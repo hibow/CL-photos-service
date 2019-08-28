@@ -4,6 +4,7 @@ const fetch = require("node-fetch");
 const key = require("../src/unsplashAPI/unsplash.js");
 // const env = require("../config.js");
 const query = require("../database/postgres/controller.js");
+
 module.exports = {
   post: (req, res) => {
     const ptag = req.params.ptag;
