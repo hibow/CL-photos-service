@@ -11,9 +11,6 @@ require("dotenv").config(); //no err if no .env
 //   connectionTimeoutMillis: 2000 // return an error after 1 second if connection could not be established
 // });
 
-// pgDB.on("connect", () => {
-//   console.log("connected!");
-// });
 const pgDB = new Pool({
   user: process.env.DB_USERNAME,
   password: process.env.DB_PASSWORD,
@@ -23,6 +20,10 @@ const pgDB = new Pool({
   max: 20,
   idleTimeoutMillis: 30000,
   connectionTimeoutMillis: 2000
+});
+
+pgDB.on("connect", () => {
+  console.log("connected!");
 });
 
 const createTables = async () => {
