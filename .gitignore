@@ -1,16 +1,10 @@
 node_modules
 
 ## API KEYS
-src/unsplashAPI/unsplash.js
-config/config.js
-config.js
+
 .env
 .sequelizerc
 report*.json
-*.yml
 util.js
-/loadtest
-newrelic.js
-newrelic*
 report.json
 report.json.html
