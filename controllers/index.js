@@ -3,7 +3,19 @@ const fetch = require("node-fetch");
 // const Photos = require("../models").Photos;
 const key = require("../src/unsplashAPI/unsplash.js");
 // const env = require("../config.js");
+const env = require('../config.js')
+const responseTime = require('response-time')
+const redis = require('redis');
+const client = redis.createClient(env.cache_port, env.cache_host); // this creates a new client
 const query = require("../database/postgres/controller.js");
+
+client.on('connect', function() {
+  console.log('Redis client connected');
+});
+client.on('connect', function() {
+  console.log('Redis client connected');
+});
+
 
 module.exports = {
   post: (req, res) => {
@@ -36,14 +48,34 @@ module.exports = {
   },
   get: (req, res) => {
     const pid = req.params.id;
-    return query
-      .getPhotos(pid)
-      .then(photos => {
-        console.log(pid);
-        console.log(photos);
-        res.status(200).json(photos);
+    const photosRedisKey = `${pid}:photos`;
+    if (env.isCached) {
+      return client.get(photosRedisKey, (err, result) => {
+        if (result) {
+          return res.status(200).json(JSON.parse(result));
+        } else {
+          return query
+          .getPhotos(pid)
+          .then(photos => {
+            console.log(pid);
+            console.log(photos);
+            client.setex(photosRedisKey, 3600, JSON.stringify(photos))
+            res.status(200).json(photos);
+          })
+          .catch(err => console.log(err));
+        }
       })
-      .catch(err => console.log(err));
+    } else {
+      return query
+          .getPhotos(pid)
+          .then(photos => {
+            console.log(pid);
+            console.log(photos);
+            client.setex(photosRedisKey, 3600, JSON.stringify(photos))
+            res.status(200).json(photos);
+          })
+          .catch(err => console.log(err));
+        }
   },
   delete: (req, res) => {
     const pid = req.params.id;

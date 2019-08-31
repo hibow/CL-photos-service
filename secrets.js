@@ -1,6 +1,6 @@
 // secrets.js
-const fs = require("fs"),
-  util = require("util");
+const fs = require("fs");
+const util = require("util");
 module.exports = {
   // Get a secret from its name
   get(secret) {

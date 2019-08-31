@@ -6,14 +6,21 @@ const port = process.env.port || 3005;
 const cors = require("cors");
 const morgan = require("morgan");
 const controller = require("../controllers/index.js");
+//At the top
+const responseTime = require('response-time');
+
 app.use(express.static(__dirname + "./../dist"));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-
+//Above the routes
+app.use(responseTime());
 app.use(cors());
 app.use(morgan("dev"));
 
 app.use("/products/:id", express.static(__dirname + "/../dist"));
+
+
+
 
 //read five photos for specific product id
 app.get("/product/:id", controller.get);

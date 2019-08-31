@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.jsx",
   "scripts": {
-    "start": "webpack-dev-server --config ./webpack.config.js --mode development",
+    "start": "node server/server.js",
     "react-dev": "webpack -p --watch",
     "server-dev": "nodemon server/server.js",
     "seed": "sequelize db:seed:all",
@@ -54,6 +54,8 @@
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-image-magnify": "^2.7.4",
+    "redis": "^2.8.0",
+    "response-time": "^2.3.2",
     "style-loader": "^0.23.1",
     "styled-components": "^4.3.2",
     "util": "^0.12.1"

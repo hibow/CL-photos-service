@@ -7,8 +7,9 @@ import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import SearchIcon from '@material-ui/icons/Search';
 import InputBase from '@material-ui/core/InputBase';
-
 import './styles.css';
+
+
 
 class App extends React.Component {
   constructor(props) {
@@ -23,7 +24,7 @@ class App extends React.Component {
   }
 
   componentDidMount() {
-    fetch(`http://localhost:3005/product/${window.location.href.split('/')[4] || 1}`, {
+    fetch(`http://54.146.177.148/product/${window.location.href.split('/')[4] || 1}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
