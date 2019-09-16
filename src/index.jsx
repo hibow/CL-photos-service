@@ -24,7 +24,7 @@ class App extends React.Component {
   }
 
   componentDidMount() {
-    fetch(`http://54.146.177.148/product/${window.location.href.split('/')[4] || 1}`, {
+    fetch(`http://localhost:3005/product/${window.location.href.split('/')[4] || 1}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

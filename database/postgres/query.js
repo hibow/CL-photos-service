@@ -8,11 +8,11 @@ module.exports = {
   db: db,
   getPhotos: (tID) => {
     console.time('getPhotos');
-    const queryStr = `SELECT * FROM public."Photos"
+    const queryStr = `EXPLAIN ANALYZE SELECT * FROM public."Photos"
                     WHERE "tagID" = (SELECT "tagID" FROM public."Photos" WHERE id = ${tID}) LIMIT 5`;
     // const queryStr = `SELECT * FROM public."Photos" WHERE id >= ${dataID} AND "tagID" = ${tID} LIMIT ${limit};`;
       return db.query(queryStr).then((res) => {
-        console.log(res.rows);
+        console.log(res);
         console.timeEnd('getPhotos');
         // db.end();
         return res.rows;

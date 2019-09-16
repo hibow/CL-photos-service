@@ -1,0 +1,33 @@
+config:
+  target: 'http://localhost:3005'
+  http:
+    pool: 10
+  phases:
+    - duration: 60
+      arrivalRate: 100
+  processor: "./loadtest/loadTestFunc.js"
+scenarios:
+  - name: "Request 5 photos"
+    flow:
+      - function: "generateRandomID"
+      - get:
+          url: "/product/{{ id }}"
+      # - log: "Current environment is set to: {{ id }}"
+  # - name: "Post 1 photo"
+  #   flow:
+  #     - function: "generateRandomPostinfo"
+  #     - post:
+  #         url: "/product/{{ tid }}/{{ptag}}"
+  #     # - log: "Current environment is set to: {{ tid }} and {{ptag}}"
+  # - name: "update 5 photo for username"
+  #   flow:
+  #     - function: "generateRandomUser"
+  #     - put:
+  #         url: "/product/{{ id }}/{{user}}"
+  #     # - log: "Current environment is set to: {{ id }}"
+  # - name: "delete 5 photo for username"
+  #   flow:
+  #     - function: "generateRandomID"
+  #     - delete:
+  #         url: "/product/{{ id }}"
+      # - log: "Current environment is set to: {{ id }}"
