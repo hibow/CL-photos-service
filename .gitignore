@@ -8,3 +8,5 @@ report*.json
 util.js
 report.json
 report.json.html
+
+Jenkinsfile
