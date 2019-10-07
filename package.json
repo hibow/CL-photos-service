@@ -1,32 +1,28 @@
 {
-  "name": "bradyservice",
+  "name": "CL_photo_service",
   "version": "1.0.0",
   "description": "",
   "main": "index.jsx",
   "scripts": {
-    "start": "webpack-dev-server --config ./webpack.config.js --mode development",
+    "start": "node server/server.js",
     "react-dev": "webpack -p --watch",
     "server-dev": "nodemon server/server.js",
     "seed": "sequelize db:seed:all",
     "unseed": "sequelize db:seed:undo:all",
-    "test": "jest"
+    "test-ui": "jest",
+    "test-api": "mocha"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/the-purple-team/bradyService.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/the-purple-team/bradyService/issues"
-  },
-  "homepage": "https://github.com/the-purple-team/bradyService#readme",
   "devDependencies": {
     "@babel/core": "^7.4.4",
     "@babel/preset-env": "^7.4.4",
     "@babel/preset-react": "^7.0.0",
     "babel-loader": "^8.0.5",
+    "chai": "^4.2.0",
+    "chai-http": "^4.3.0",
+    "lodash": "^4.17.14",
+    "perf_hooks": "0.0.1",
+    "sequelize": "^5.10.0",
+    "sequelize-cli": "^5.5.0",
     "webpack": "^4.30.0",
     "webpack-cli": "^3.3.2",
     "webpack-dev-server": "^3.3.1"
@@ -43,19 +39,26 @@
     "express": "^4.16.4",
     "faker": "^4.1.0",
     "file-loader": "^3.0.1",
+    "fs": "0.0.1-security",
     "identity-obj-proxy": "^3.0.0",
     "jest": "^24.8.0",
+    "mocha": "^6.2.0",
     "morgan": "^1.9.1",
     "mysql": "^2.17.1",
     "mysql2": "^1.6.5",
+    "neo4j-driver": "^1.7.5",
+    "newrelic": "^5.11.0",
     "node-fetch": "^2.5.0",
+    "pg": "^7.12.1",
+    "pg-pool": "^2.0.7",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-image-magnify": "^2.7.4",
-    "sequelize": "^5.10.0",
-    "sequelize-cli": "^5.5.0",
+    "redis": "^2.8.0",
+    "response-time": "^2.3.2",
     "style-loader": "^0.23.1",
-    "styled-components": "^4.3.2"
+    "styled-components": "^4.3.2",
+    "util": "^0.12.1"
   },
   "jest": {
     "setupFiles": [

@@ -1,0 +1,14 @@
+# ignore .git and .cache folders
+.git
+.cache
+
+#ignore secret
+
+node_modules
+
+.sequelizerc
+report*.json
+util.js
+Jenkinsfile
+report.json
+report.json.html

@@ -1,7 +1,12 @@
 node_modules
 
 ## API KEYS
-src/unsplashAPI/unsplash.js
-config.js
+
 .env
 .sequelizerc
+report*.json
+util.js
+report.json
+report.json.html
+
+Jenkinsfile
