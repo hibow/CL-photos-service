@@ -7,12 +7,14 @@
   - https://github.com/rpt13-bohemian-rhapsody/rpt13-SDC-alicia-service
   - https://github.com/rpt13-bohemian-rhapsody/rpt13-SDC-david-service
 
+## Engineering Journal
+  - [Google document Link](https://drive.google.com/file/d/1Z-u6jwoJUng5UYMMGGgedn06sXM8zC79/view?usp=sharing)
+
 ## Table of Contents 
   1. [Requirements](#1-Requirements)
   2. [Development](#2-Development)
   - 2.1 [Installing Dependencies](#21-Installing-Dependencies)
   - 2.2 [API Endpoints](#22-API-Endpoints)
-
 
 ## 1. Requirements
 
