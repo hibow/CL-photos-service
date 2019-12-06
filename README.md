@@ -1,4 +1,4 @@
-# Amazon Photo App
+# Photo Service
 >This project is aimed at optimizing the performance of the legacy photo service.
 
 ## Related Projects
