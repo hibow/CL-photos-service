@@ -48,7 +48,7 @@
     "mysql2": "^1.6.5",
     "neo4j-driver": "^1.7.5",
     "newrelic": "^5.11.0",
-    "node-fetch": "^2.5.0",
+    "node-fetch": "^2.6.1",
     "pg": "^7.12.1",
     "pg-pool": "^2.0.7",
     "react": "^16.8.6",
