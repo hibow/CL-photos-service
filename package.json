@@ -19,7 +19,7 @@
     "babel-loader": "^8.0.5",
     "chai": "^4.2.0",
     "chai-http": "^4.3.0",
-    "lodash": "^4.17.14",
+    "lodash": "^4.17.21",
     "perf_hooks": "0.0.1",
     "sequelize": "^5.10.0",
     "sequelize-cli": "^5.5.0",
