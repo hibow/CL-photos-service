@@ -36,7 +36,7 @@
     "dotenv": "^8.0.0",
     "enzyme": "^3.10.0",
     "enzyme-adapter-react-16": "^1.14.0",
-    "express": "^4.16.4",
+    "express": "^4.17.3",
     "faker": "^4.1.0",
     "file-loader": "^3.0.1",
     "fs": "0.0.1-security",
